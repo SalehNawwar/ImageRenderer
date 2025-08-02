@@ -46,5 +46,5 @@ struct Ray {
 	Vec3 origin;
 	Vec3 direction;
 	Ray(Vec3 orig, Vec3 dir) :origin(orig), direction(dir) {}
-	
+
 };

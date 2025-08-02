@@ -3,12 +3,17 @@
 #include "Geometry3d.h"
 #include "Vec4.h"
 #include "Vec3.h"
+#include "Camera.h"
+#include <iostream>
 
 class Renderer
 {
 public:
-	Renderer(Palette _palette):palette(_palette){}
-	void Render();
+	Renderer(Palette& _palette):palette(&_palette),activeCamera(nullptr),activeScene(nullptr), lightDir(1, -1, -1) {
+		lightDir.Normalize();
+		
+	}
+	void Render(const Camera& camera,const Scene& scene);
 
 
 private:
@@ -19,13 +24,16 @@ private:
 		int Index;
 	};
 
-	void PerPixel(int x,int y);
-	HitPayload TraceRay(const Ray& ray);
-	HitPayload ClosestHit(const Ray& ray, float hitDistance,int objectIndex);
-	HitPayload Miss(const Ray& ray);
+	Vec4 PerPixel(int x,int y, int bounces) const;
+	HitPayload TraceRay(const Ray& ray) const;
+	HitPayload ClosestHit(const Ray& ray, float hitDistance,int objectIndex)const;
+	HitPayload Miss(const Ray& ray)const;
+
+
 private:
-	Palette palette;
-	std::vector<Sphere> spheres;
-	
+	Palette *palette;
+	const Camera* activeCamera;
+	const Scene *activeScene;
+	Vec3 lightDir;
 };
 

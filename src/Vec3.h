@@ -19,5 +19,10 @@ public:
 			X()*other.Y() - Y()*other.X()
 			});
 	}
+	Vec3 Reflect(const Vec3& normal) {
+
+		Vec3 parallel = normal * -this->Dot(normal);
+		return parallel + (parallel + (*this));
+	}
 };
 
