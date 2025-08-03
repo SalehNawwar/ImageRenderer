@@ -10,7 +10,7 @@ public:
 	Palette(const std::vector<std::vector<Vec4> >& bitmap);
 
 	Vec4 GetPixel(int x, int y);
-	void SetPixel(int x, int y, Vec4 val);
+	void SetPixel(int x, int y,const Vec4& val);
 
 };
 

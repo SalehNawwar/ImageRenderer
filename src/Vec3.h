@@ -1,28 +1,56 @@
 #pragma once
-#include "Vec.h"
-class Vec3 : public Vec
+#include "Matrix.h"
+struct Vec3
 {
-public:
-	Vec3() :Vec({ 0, 0, 0 }) {}
-	Vec3(float x, float y, float z) :Vec({ x,y,z }) {}
-	Vec3(const Matrix& mat):Vec({mat.At(0,0),mat.At(1,0),mat.At(2,0)}){}
-	float X() const { return At(0, 0); }
-	float Y() const { return At(1, 0); }
-	float Z() const { return At(2, 0); }
-	void SetX(float x) { Set(0, 0, x); }
-	void SetY(float y) { Set(1, 0, y); }
-	void SetZ(float z) { Set(2, 0, z); }
-	Vec3 Cross(const Vec3& other) const { 
-		return Vec3({
-			Y() * other.Z() - Z() * other.Y(),
-			-X() * other.Z() + Z() * other.X(),
-			X()*other.Y() - Y()*other.X()
-			});
+	float x, y, z;
+	Vec3() : x(0),y(0),z(0) {}
+	Vec3(float x, float y, float z) :x(x),y(y),z(z) {}
+	Vec3(const Vec3&) = default;
+	float Norm() {
+		return sqrtf(x * x + y * y + z * z);
 	}
-	Vec3 Reflect(const Vec3& normal) {
 
-		Vec3 parallel = normal * -this->Dot(normal);
-		return parallel + (parallel + (*this));
+	void Normalize() {
+		float val = 1 / Norm();
+		x *= val;
+		y *= val;
+		z *= val;
+	}
+
+	float Dot(const Vec3& other) const {
+		return x * other.x + y * other.y + z * other.z;
+	}
+
+	Vec3 Cross(const Vec3& other) const { 
+		return Vec3(
+			y * other.z - z * other.y,
+			-x * other.z + z * other.x,
+			x*other.y - y*other.x
+			);
+	}
+
+	Vec3 Reflect(const Vec3& normal);
+
+	Vec3 operator+(const Vec3& other) const {
+		return Vec3(other.x + x, other.y + y, other.z + z);
+	}
+	Vec3 operator-(const Vec3& other) const {
+		return Vec3(x-other.x, y-other.y , z-other.z);
+	}
+	Vec3 operator/(float val) const {
+		val = 1 / val;
+		return Vec3(x * val, y * val, z * val);
+	}
+
+	Vec3 operator-() const {
+		return Vec3(-x, -y, -z);
 	}
 };
 
+Vec3 operator*(float val, const Vec3& other);
+Vec3 operator*(const Vec3& other, float val);
+Vec3 operator+(float val, const Vec3& other);
+Vec3 operator+(const Vec3& other, float val);
+Vec3 operator-(float val, const Vec3& other);
+Vec3 operator-(const Vec3& other, float val);
+Vec3 operator*(const Matrix& mat, const Vec3& vec);

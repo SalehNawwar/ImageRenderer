@@ -6,7 +6,7 @@
 struct Shape {
 	Matrix rotation;
 	Vec3 translation;
-	Vec4 color;
+	Vec3 color;
 	float metalic;
 	float soft;
 	Shape() :rotation(Matrix::Identity(3)),metalic(0),soft(1) {}
@@ -45,6 +45,6 @@ private:
 struct Ray {
 	Vec3 origin;
 	Vec3 direction;
-	Ray(Vec3 orig, Vec3 dir) :origin(orig), direction(dir) {}
+	Ray(const Vec3& orig, const Vec3& dir) :origin(orig), direction(dir) {}
 
 };

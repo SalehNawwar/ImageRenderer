@@ -172,10 +172,10 @@ void ImageBMP::Paint(const std::vector<std::vector<Vec4> > paint) {
 	
 	for (int i = 0; i < h; ++i) {
 		for (int j = 0; j < w; ++j) {
-			float r = paint.at(i).at(j).At(0, 0);
-			float g = paint.at(i).at(j).At(1, 0);
-			float b = paint.at(i).at(j).At(2, 0);
-			float a = paint.at(i).at(j).At(3, 0);
+			float r = paint.at(i).at(j).x;
+			float g = paint.at(i).at(j).y;
+			float b = paint.at(i).at(j).z;
+			float a = paint.at(i).at(j).w;
 			ptr[(i * w + j) * 4] = (int)(b * 255);
 			ptr[(i * w + j) * 4 + 1] = (int)(g * 255);
 			ptr[(i * w + j) * 4 + 2] = (int)(r * 255);
@@ -192,10 +192,12 @@ std::vector<std::vector<Vec4> > ImageBMP::GetPaint() {
 
 	for (int i = 0; i < h; ++i) {
 		for (int j = 0; j < w; ++i) {
-			for (int k = 0; k < 4; ++k) {
-				float val = ptr[(i * w + j) * 4 + k];
-				paint.at(i).at(j).Set(k, 0, val/255);
-			}
+			unsigned char* pixelptr = ptr + (i * w + j) * 4;
+			Vec4& pixel = paint.at(i).at(j);
+			pixel.z = *(pixelptr)/255.0f;
+			pixel.y = *(pixelptr + 1)/255.0f;
+			pixel.x = *(pixelptr + 2)/255.0f;
+			pixel.w = *(pixelptr + 3)/255.0f;
 		}
 	}
 

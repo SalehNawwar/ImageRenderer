@@ -234,15 +234,19 @@ Matrix Matrix::operator*(const Matrix& other) const {
 	if (Columns() != other.Rows()) {
 		throw -1;
 	}
-
-	Matrix ret(Rows(), other.Columns());
-	for (int i = 0; i < ret.Rows(); ++i) {
-		for (int j = 0; j < ret.Columns(); ++j) {
+	int n = Rows();
+	int m = other.Columns();
+	int common = Columns();
+	Matrix ret(n, m);
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < m; ++j) {
 			float sum = 0;
-			for (int k = 0; k < Columns(); ++k) {
+			for (int k = 0; k < common; ++k) {
 				sum += At(i, k) * other.At(k, j);
+				//sum += _arr[i][k] * other._arr[k][j];
 			}
 			ret.Set(i, j, sum);
+			//ret._arr[i][j] = sum;
 		}
 	}
 

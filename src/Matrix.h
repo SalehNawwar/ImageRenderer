@@ -3,9 +3,9 @@
 
 #define EPSILON 0.00001f
 
-class Matrix
+struct Matrix
 {
-public:
+	
 	Matrix() = delete;
 
 	Matrix(int rows, int columns);
@@ -41,8 +41,9 @@ public:
 	Matrix operator/(float val) const;
 
 	static Matrix Identity(int rows);
+	
 
-protected:
 	std::vector<std::vector<float>> _arr;
+	
 };
 

@@ -1,24 +1,30 @@
 #include "Renderer.h"
-#include <iostream>
+
+//#include <math.h>
 void Renderer::Render(const Camera& camera,const Scene& scene) {
 	activeCamera = &camera;
 	activeScene = &scene;
 	std::cout << scene.spheres.size() << std::endl;
+    auto start = std::chrono::high_resolution_clock::now();
+	Vec4 color;
 	for (int x = 0; x < palette->width; ++x) {
 		for (int y = 0; y < palette->height; ++y) {
-			Vec4 color = PerPixel(x, y, 1);
-			//Vec4 color = Vec4(1, 0, 0, 1);
+			Vec4 color = PerPixel(x, y, 10);
 			
+			//for (int i = 0; i < 4; i++)color.Set(i, 0, std::min(color.At(i, 0),1.0f));
 			palette->SetPixel(x, y, color);
 
 		}
 	}
-	
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+	std::cout << "Time Elapsed : " << duration.count() << std::endl;
 }
 
 Vec4 Renderer::PerPixel(int x, int y, int bounces) const {
-	Vec3 origin = activeCamera->Position;
-	Vec3 direction(x * 2.0f / palette->width - 1, y * 2.0f / palette->height - 1, -1);
+	
+	const Vec3& origin = activeCamera->Position;
+	Vec3 direction(x * Wscale - 1, y * Hscale - 1, -1);
 	direction = activeCamera->Orientation* direction;
 	Ray ray(origin, direction);
 
@@ -26,6 +32,7 @@ Vec4 Renderer::PerPixel(int x, int y, int bounces) const {
 
 	Vec3 color;
 	HitPayload payload;
+
 	for (int i = 0; i < bounces; ++i) {
 		
 		payload = TraceRay(ray);
@@ -44,14 +51,15 @@ Vec4 Renderer::PerPixel(int x, int y, int bounces) const {
 		color = color + sphereColor * multiplier;
 		multiplier *= 0.7;
 		
-		ray.origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
+		ray.origin = payload.WorldPosition + payload.WorldNormal * 0.00001f;
 		ray.direction = ray.direction.Reflect(payload.WorldNormal);
 	}
 
-	return Vec4(color.X(),color.Y(),color.Z(), 1);
+	return Vec4(color.x,color.y,color.z, 1);
 }
 
 Renderer::HitPayload Renderer::TraceRay(const Ray& ray) const {
+	
 	float hitDistance = -1.0f;
 	int index = -1;
 	int closestSphere = -1;
@@ -85,13 +93,18 @@ Renderer::HitPayload Renderer::TraceRay(const Ray& ray) const {
 }
 
 Renderer::HitPayload Renderer::ClosestHit(const Ray& ray, float hitDistance, int objectIndex) const {
+	
+	
 	HitPayload payload;
 
 	payload.HitDistance = hitDistance;
 	payload.Index = objectIndex;
 	payload.WorldPosition = ray.origin + ray.direction * hitDistance;
 	payload.WorldNormal = payload.WorldPosition - activeScene->spheres[objectIndex].Center();
-	
+	/*HitPayload checkShadow = TraceRay(Ray(payload.WorldPosition,-lightDir));
+	if(checkShadow.HitDistance >= 0.0f){
+		return Miss
+	}*/
 	return payload;
 }
 
